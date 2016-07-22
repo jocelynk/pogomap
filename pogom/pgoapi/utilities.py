@@ -30,6 +30,7 @@ from importlib import import_module
 from s2sphere import CellId, LatLng
 from google.protobuf.internal import encoder
 from geopy.geocoders import GoogleV3
+from geopy.geocoders import Nominatim
 
 
 def f2i(float):
@@ -55,7 +56,7 @@ def get_pos_by_name(location_name):
     if res:
         latitude, longitude, altitude = float(res.group(1)), float(res.group(2)), 0
     else:
-        geolocator = GoogleV3()
+        geolocator = Nominatim() #GoogleV3()
         loc = geolocator.geocode(location_name)
         latitude, longitude, altitude = loc.latitude, loc.longitude, loc.altitude
     
