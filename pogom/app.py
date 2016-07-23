@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import logging
+
 import calendar
 from flask import Flask, jsonify, render_template, request
 from flask.json import JSONEncoder
@@ -8,6 +10,9 @@ from datetime import datetime
 
 from . import config
 from .models import Pokemon, Gym, Pokestop
+from pogom.pgoapi.utilities import get_pos_by_name
+
+log = logging.getLogger(__name__)
 
 
 class Pogom(Flask):
@@ -17,6 +22,7 @@ class Pogom(Flask):
         self.route("/", methods=['GET'])(self.fullmap)
         self.route("/raw_data", methods=['GET'])(self.raw_data)
         self.route("/next_loc", methods=['POST'])(self.next_loc)
+        self.route("/get_loc", methods=['GET'])(self.get_loc)
 
     def fullmap(self):
         return render_template('map.html',
@@ -47,6 +53,19 @@ class Pogom(Flask):
             config['ORIGINAL_LATITUDE'] = lat
             config['ORIGINAL_LONGITUDE'] = lon
             return 'ok'
+
+    def get_loc(self):
+        position = get_pos_by_name(request.args['location'])
+        log.info('Parsed location is: {:.4f}/{:.4f}/{:.4f} (lat/lng/alt)'.
+             format(*position))
+
+        config['ORIGINAL_LATITUDE'] = position[0]
+        config['ORIGINAL_LONGITUDE'] = position[1]
+
+        return render_template('map.html',
+                               lat=config['ORIGINAL_LATITUDE'],
+                               lng=config['ORIGINAL_LONGITUDE'],
+                               gmaps_key=config['GMAPS_KEY'])
 
 
 class CustomJSONEncoder(JSONEncoder):

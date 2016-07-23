@@ -34,35 +34,60 @@ var selectedStyle = 'light';
 
 function initMap() {
 
+    var pos = {
+        lat: "",
+        lng: ""
+    };
 
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            pos["lat"] = position.coords.latitude;
+            pos["lng"] = position.coords.longitude;
+            setupMap(pos);
+        }, function() {
+            pos["lat"] = 40.716105;
+            pos["lng"] = -74.033091;
+            setupMap(pos);
+            console.log("Geolocation failed")
+        });
+    } else {
+        pos["lat"] = 40.716105;
+        pos["lng"] = -74.033091;
+        setupMap(pos);
+       console.log("Geolocation failed")
+    }
+
+};
+
+function setupMap(pos) {
     map = new google.maps.Map(document.getElementById('map'), {
         center: {
-            lat: center_lat,
-            lng: center_lng
+            lat: center_lat ||  pos["lat"],
+            lng: center_lng || pos["lng"]
         },
         zoom: 16,
         streetViewControl: false,
-		mapTypeControl: true,
-		mapTypeControlOptions: {
-          style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-          position: google.maps.ControlPosition.RIGHT_TOP,
-          mapTypeIds: [
-              google.maps.MapTypeId.ROADMAP,
-              google.maps.MapTypeId.SATELLITE,
-              'dark_style',
-              'style_light2',
-              'style_pgo']
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+            position: google.maps.ControlPosition.RIGHT_TOP,
+            mapTypeIds: [
+                google.maps.MapTypeId.ROADMAP,
+                google.maps.MapTypeId.SATELLITE,
+                'dark_style',
+                'style_light2',
+                'style_pgo']
         },
     });
 
-	var style_dark = new google.maps.StyledMapType(darkStyle, {name: "Dark"});
-	map.mapTypes.set('dark_style', style_dark);
+    var style_dark = new google.maps.StyledMapType(darkStyle, {name: "Dark"});
+    map.mapTypes.set('dark_style', style_dark);
 
-	var style_light2 = new google.maps.StyledMapType(light2Style, {name: "Light2"});
-	map.mapTypes.set('style_light2', style_light2);
+    var style_light2 = new google.maps.StyledMapType(light2Style, {name: "Light2"});
+    map.mapTypes.set('style_light2', style_light2);
 
-	var style_pgo = new google.maps.StyledMapType(pGoStyle, {name: "PokemonGo"});
-	map.mapTypes.set('style_pgo', style_pgo);
+    var style_pgo = new google.maps.StyledMapType(pGoStyle, {name: "PokemonGo"});
+    map.mapTypes.set('style_pgo', style_pgo);
 
     map.addListener('maptypeid_changed', function(s) {
         localStorage['map_style'] = this.mapTypeId;
@@ -74,15 +99,16 @@ function initMap() {
 
     marker = new google.maps.Marker({
         position: {
-            lat: center_lat,
-            lng: center_lng
+            lat: center_lat ||  pos["lat"],
+            lng: center_lng ||  pos["lng"]
         },
         map: map,
         animation: google.maps.Animation.DROP
     });
 
     initSidebar();
-};
+
+}
 
 function initSidebar() {
     $('#gyms-switch').prop('checked', localStorage.showGyms === 'true');

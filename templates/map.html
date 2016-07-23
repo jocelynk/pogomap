@@ -104,7 +104,7 @@
         </label>
         <div>
             <h3>Enter in Location</h3>
-            <form role="form" method='GET' action="">
+            <form role="form" method='GET' action="{{ url_for('get_loc') }}">
                 <div class="form-group">
                     <input type="text" name="location" class="form-control" id="location" placeholder="Enter Location that Google Maps will understand..." style="max-width: 300px;" autofocus required>
                 </div>

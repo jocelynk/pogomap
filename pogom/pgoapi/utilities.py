@@ -56,7 +56,7 @@ def get_pos_by_name(location_name):
     if res:
         latitude, longitude, altitude = float(res.group(1)), float(res.group(2)), 0
     else:
-        geolocator = Nominatim() #GoogleV3()
+        geolocator = GoogleV3() #Nominatim()
         loc = geolocator.geocode(location_name)
         latitude, longitude, altitude = loc.latitude, loc.longitude, loc.altitude
     
